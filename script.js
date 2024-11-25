@@ -86,6 +86,23 @@ let userData = {
     songCurrentTime: 0,
 };
 
+// Play Function
+const playSong = (id) => {
+    const song = userData?.songs.find((song) => song.id === id);
+    audio.src = song.src;
+    audio.title = song.title;
+
+    if (!userData?.currentSong || userData?.currentSong.id !== song.id){
+        audio.currentTime = 0;
+    } else {
+        audio.currentTime = userData?.songCurrentTime
+    };
+    userData.currentSong = song;
+    playButton.classList.add("playing");
+    audio.play();
+}
+
+// Adding the songs to the UI
 const renderSongs = (array) => {
     const songsHTML = array.map((song) =>  {
         return `
@@ -107,6 +124,26 @@ const renderSongs = (array) => {
     playlistSongs.innerHTML = songsHTML;
 };
 
- 
+playButton.addEventListener("click", () => {
+    if(userData?.currentSong === null){
+       playSong(userData?.songs[0].id);
+    }
+});
 
-renderSongs(userData?.songs);
+// Sorting the song title Alphabetically
+const sortSongs = () => {
+    userData?.songs.sort((a, b) =>{
+        if (a.title < b.title) {
+            return -1;
+        }
+
+        if(a.title > b.title) {
+            return 1
+        }
+
+        return 0;
+    });
+    return userData?.songs;
+};
+
+renderSongs(sortSongs());
